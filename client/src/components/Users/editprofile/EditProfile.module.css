@@ -1,0 +1,74 @@
+.mainStyles {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+}
+
+.formStyle {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 320px;
+}
+
+.profileImage {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 3px solid #4caf50;
+}
+
+.labelForm {
+    font-size: 1rem;
+    color: #333;
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+}
+
+.inputField {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.submitBtn, .cancelBtn, .verifyBtn, .deleteBtn, .confirmDeleteBtn {
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.submitBtn {
+    background-color: #4caf50;
+    color: white;
+}
+
+.cancelBtn {
+    background-color: #ccc;
+}
+
+.deleteBtn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.confirmDeleteBtn {
+    background-color: #c0392b;
+    color: white;
+}
+
+.error {
+    color: red;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}

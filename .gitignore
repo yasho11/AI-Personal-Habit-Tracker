@@ -1,0 +1,21 @@
+# Node.js
+node_modules/
+npm-debug.log
+
+# Environment variables
+.env
+
+# IDE specific files
+.vscode/
+.idea/
+
+# Frontend build files
+/dist/
+/build/
+
+# Logs
+logs/
+*.log
+
+# Misc
+.DS_Store
