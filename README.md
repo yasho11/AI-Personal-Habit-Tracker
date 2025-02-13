@@ -33,48 +33,43 @@ This is a full-stack habit tracker application built with **React** for the fron
    ```bash
    git clone https://github.com/yourusername/habit-tracker.git
 
-    Navigate to the backend directory:
-    bash
-    Copy
+2. Navigate to the backend directory:
+    ````bash
+
 
     cd habit-tracker/backend
 
-    Install dependencies:
-    bash
-    Copy
-
+3. Install dependencies:
+    ```bash
     npm install
 
-    Create a .env file in the root of the backend directory and add the following:
-    env
-    Copy
+4. Create a .env file in the root of the backend directory and add the following:
+    ```env
 
     JWT_SECRET=your_jwt_secret
     MONGO_URI=mongodb://127.0.0.1:27017/HabitTracker
 
-    Start the backend server:
-    bash
-    Copy
-
+5. Start the backend server:
+    ```bash
+   
     npm start
 
-Frontend Setup
+###Frontend Setup
 
-    Navigate to the frontend directory:
-    bash
-    Copy
+1. Navigate to the frontend directory:
+    ```bash
 
     cd habit-tracker/frontend
 
-    Install dependencies:
-    bash
-    Copy
+2. Install dependencies:
+    ```bash
+
 
     npm install
 
-    Start the frontend development server:
-    bash
-    Copy
+3. Start the frontend development server:
+    ```bash
+
 
     npm run dev
 
