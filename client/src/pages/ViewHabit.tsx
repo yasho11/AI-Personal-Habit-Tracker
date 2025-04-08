@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axiosInstance from "../../../api/axios";
+import { axiosInstance } from "../libs/axios";
 import { useNavigate } from "react-router-dom";
 import styles from "./ViewHabit.module.css"; // Import the CSS module
 

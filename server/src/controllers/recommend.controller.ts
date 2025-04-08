@@ -1,5 +1,5 @@
 import express from "express";
-import Habits from "../models/Habits"; // Assuming your Habit model is here
+import Habits from "../models/habits.model"; // Assuming your Habit model is here
 
 const router = express.Router();
 

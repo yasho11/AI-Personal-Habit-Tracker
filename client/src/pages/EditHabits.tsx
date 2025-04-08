@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axiosInstance from "../../../api/axios";
+import axiosInstance from "../libs/axios";
 import styles from "./EditHabits.module.css";
 
 

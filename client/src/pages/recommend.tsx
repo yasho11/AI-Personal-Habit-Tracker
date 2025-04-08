@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom"; // To get the habit ID from URL parameters
-import axiosInstance from "../../api/axios";
+import axiosInstance from "../libs/axios";
 import styles from "./recommend.module.css"; // Import the CSS module
 
 // Define the types for the habit and recommendation

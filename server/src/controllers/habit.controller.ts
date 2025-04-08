@@ -1,7 +1,7 @@
 import express, { Router, Request, Response } from "express";
-import { verifyToken } from "../middleware/verifyToken";
-import Habits from "../models/Habits";
-import Users from "../models/Users";
+import { verifyToken } from "../middleware/auth.middleware";
+import Habits from "../models/habits.model";
+import Users from "../models/users.model";
 import mongoose from "mongoose";
 const router = Router();
 interface CustomRequest extends Request {

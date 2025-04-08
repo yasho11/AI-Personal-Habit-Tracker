@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../../api/axios";
+import axiosInstance from "../libs/axios";
 import styles from "./EditProfile.module.css"; // ✅ Import CSS Module
 
 function EditProfile() {

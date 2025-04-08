@@ -2,11 +2,11 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import multer from "multer";
-import UserRoutes from "./routes/UserRoutes";
-import HabitRoutes from "./routes/HabitRoutes";
-import RecommendRoutes from "./routes/RecommendRoutes";
+import authRoutes from "./routes/authRoutes";
+import HabitRoutes from "./controllers/habit.controller";
+import RecommendRoutes from "./controllers/recommend.controller";
 import mongoose from "mongoose";
-import Habits from "./models/Habits";
+import Habits from "./models/habits.model";
 import cron from "node-cron";
 
 const app = express();
@@ -28,7 +28,7 @@ app.use(
 
 
 // ✅ Register Routes
-app.use("/api", UserRoutes);
+app.use("/api", authRoutes);
 app.use("/api", HabitRoutes);
 app.use("/api", RecommendRoutes);
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axiosInstance from "../../../api/axios";
+import axiosInstance from "../libs/axios";
 import { useNavigate } from "react-router-dom";
-import styles from "./AddHabits.module.css"; // Make sure the path is correct
+
 
 
 const AddHabit: React.FC = () => {
@@ -61,9 +61,9 @@ const AddHabit: React.FC = () => {
     return (
         
         // Inside the component
-        <div className={styles.container}>
+        <div className="{styles.container}">
             <h2>Add a New Habit</h2>
-            {errorMessage && <p className={styles.error}>{errorMessage}</p>}
+            {errorMessage && <p className="{styles.error}">{errorMessage}</p>}
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>Habit Name:</label>
