@@ -1,27 +1,30 @@
 import express from "express";
 import cors from "cors";
-import path from "path";
-import multer from "multer";
 import authRoutes from "./routes/authRoutes";
-import HabitRoutes from "./controllers/habit.controller";
-import RecommendRoutes from "./controllers/recommend.controller";
+import habitRoutes from "./routes/habitRoutes";
 import mongoose from "mongoose";
 import Habits from "./models/habits.model";
 import cron from "node-cron";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
+
+dotenv.config();
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT;
 
 // Enable JSON parsing
-app.use(express.json());
+app.use(express.json({limit: '10mb'}));
+app.use(express.urlencoded({limit: '10mb', extended: true}));
 app.use(express.static("public"));
-
+app.use(cookieParser());
 // ✅ FIX OPAQUE RESPONSE BLOCKING: Correct CORS settings
 app.use(
   cors({
     origin: "http://localhost:5173", // Explicitly allow frontend origin
     methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
 
@@ -29,15 +32,17 @@ app.use(
 
 // ✅ Register Routes
 app.use("/api", authRoutes);
-app.use("/api", HabitRoutes);
-app.use("/api", RecommendRoutes);
+app.use("/api", habitRoutes);
 
 // ✅ Connect to MongoDB
-const mongoURI = "mongodb://127.0.0.1:27017/HabitTracker";
+const mongoURI = process.env.mongoDB;
+if (!mongoURI) {
+  throw new Error("MongoDB connection string is not defined in environment variables.");
+}
 mongoose
   .connect(mongoURI)
   .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("Couldn't connect to MongoDB"));
+  .catch((err) => console.error("Couldn't connect to MongoDB", err));
 
 // ✅ Schedule habit status reset at midnight
 const resetHabitStatus = async () => {

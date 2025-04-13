@@ -7,8 +7,8 @@ import { Link } from "react-router-dom";
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    UserEmail: "",
+    UserPassword: "",
   });
 
   const { signin, isSigningIn } = useAuthStore();
@@ -35,9 +35,9 @@ export default function Login() {
                 type="email"
                 placeholder="you@example.com"
                 className="input input-bordered w-full pl-10"
-                value={formData.email}
+                value={formData.UserEmail}
                 onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
+                  setFormData({ ...formData, UserEmail: e.target.value })
                 }
                 required
               />
@@ -55,9 +55,9 @@ export default function Login() {
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 className="input input-bordered w-full pl-10 pr-10"
-                value={formData.password}
+                value={formData.UserPassword}
                 onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
+                  setFormData({ ...formData, UserPassword: e.target.value })
                 }
                 required
               />

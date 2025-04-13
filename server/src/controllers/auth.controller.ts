@@ -1,24 +1,18 @@
 import { Router } from "express";
 import Users from "../models/users.model";
 import bcryptjs from "bcryptjs";
-import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import Habits from "../models/habits.model";
-import multer from "multer";
-import path from "path";
-import { protectRoute } from "../middleware/auth.middleware";
 import { Request, Response } from "express";
-import { sign } from "crypto";
-import { promises } from "dns";
+import { generateToken } from "../libs/utils";
+import { AuthRequest } from "../libs/types";
 dotenv.config();
 
 const router = Router();
 
 const JWT_SECRET = process.env.JWT_SECRET || "Nokey";
 
-interface AuthRequest extends Request {
-  user?: any;
-}
+
 //------ROUTER STARTS HERE----------------------------------------
 
 //-------------------------------------------------------------
@@ -51,10 +45,13 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
       ProfileUrl,
     });
 
-    // Save the user to the database
-    await user.save();
-     res.status(201).json({ message: "User created successfully!" });
+    if(user){
+      generateToken(user._id as string, user.UserEmail,res);
+      await user.save();
+      res.status(201).json({message: "User Created Successfully", New_User: user})
       return;
+    }
+
     } catch (error) {
     console.error(error);
      res.status(500).json({ error: "Server error"  , error_area: "signup"});
@@ -101,24 +98,9 @@ export const signin = async (req: Request, res: Response): Promise<any> => {
         // Update the user's points
         user.Points = totalPoints;
         await user.save();
-
-        // Generate JWT token (expires in 1 day)
-        const token = jwt.sign(
-          { id: user._id, email: user.UserEmail },
-          JWT_SECRET,
-          { expiresIn: "1d" }
-        );
-
-        return res.status(200).json({
-          message: "Login successful",
-          token,
-          user: {
-            id: user._id,
-            UserName: user.UserName,
-            UserEmail: user.UserEmail,
-            Points: user.Points, // Send updated points back to the client
-          },
-        });
+        console.log("User Id: ", user._id);
+        generateToken(user._id as string, user.UserEmail,res);
+        res.status(200).json({message: "Signin Successful", User: user});
       }
     }
   } catch (error: any) {
@@ -141,64 +123,53 @@ export const signout = async (req: Request, res: Response): Promise<void>=>{
 }
 
 
-//----------------------------------------------------------------------------
+//?----------------------------------------------------------------------------
 
 
 //! @name: UpdateProfile
 //! @desc: Update user profile
 
-
 export const updateProfile = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const user = req.user;
+    const { ProfileUrl } = req.body;
 
+    console.log("User For token: ", user._id);
     if (!user) {
       res.status(401).json({ message: "Unauthorized" });
       return;
     }
 
-    // Fetch user from DB
-    const existingUser = await Users.findById(user._id);
-    if (!existingUser) {
+    // If a new profile picture is uploaded, update ProfileUrl to the new path
+    let newProfileUrl = ProfileUrl; // Default to existing ProfileUrl or passed one
+    
+    if (req.file) {
+      // If a file is uploaded, use the file path for ProfileUrl
+      newProfileUrl = `/uploads/${req.file.filename}`;
+    }
+
+    // Update the user's profile with the new ProfileUrl
+    const updatedUser = await Users.findByIdAndUpdate(
+      user._id, 
+      { ProfileUrl: newProfileUrl }, 
+      { new: true }  // This ensures the updated document is returned
+    );
+
+    if (!updatedUser) {
       res.status(404).json({ message: "User not found" });
       return;
     }
 
-    // Update Name if provided
-    if (req.body.UpUserName) {
-      existingUser.UserName = req.body.UpUserName;
-    }
-
-    // Update Password if provided
-    if (req.body.UpUserPassword) {
-      const salt = await bcryptjs.genSalt(10);
-      existingUser.UserPassword = await bcryptjs.hash(req.body.UpUserPassword, salt);
-    }
-
-    // Update Profile Picture if uploaded
-    if (req.file) {
-      const profilePath = `/uploads/${req.file.filename}`;
-      existingUser.ProfileUrl = profilePath;
-    }
-
-    // Save updated user
-    await existingUser.save();
-
+    // Respond with the updated user
     res.status(200).json({
       message: "Profile updated successfully",
-      user: {
-        id: existingUser._id,
-        UserName: existingUser.UserName,
-        UserEmail: existingUser.UserEmail,
-        ProfileUrl: existingUser.ProfileUrl,
-      },
+      User: updatedUser
     });
   } catch (error) {
     console.error("Profile update error:", error);
     res.status(500).json({ message: "Internal server error", error_area: "Update Profile" });
   }
 };
-
 //---------------------------------------------------------------------------------------------------
 
 //!name: getUser
@@ -245,3 +216,49 @@ export const checkAuth = async(req: AuthRequest, res:Response): Promise<void>=>{
     res.status(500).json({message: "Internal Server Error", error_area: "checkAuth"})
   }
 }
+
+
+//----------------------------------------------------------------------------------------------
+
+//! @name: UpdatePoint
+//! @desc: update the points in the profile
+
+export const UpdatePoint = async (req: AuthRequest, res: Response) => {
+  const UserEmail = req.user.UserEmail;
+
+  try {
+
+    const userHabits = await Habits.find({ UserEmail });
+
+    if (!userHabits) {
+     res.status(404).json({ message: "No habits found for this user." });
+     return ;
+    }
+
+
+    let totalPoints = 0;
+
+    for (const habit of userHabits) {
+
+      totalPoints += habit.HabitPoints || 0;
+    }
+
+    await Users.findOneAndUpdate(
+      { UserEmail },
+      { $set: { Points: totalPoints } },
+      { new: true }
+    );
+
+    res.status(200).json({
+      message: "User points updated successfully.",
+      totalPoints,
+    });
+
+  } catch (error) {
+    console.error("UpdatePoint error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+
+export default router;

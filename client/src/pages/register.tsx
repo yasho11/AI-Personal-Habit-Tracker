@@ -8,20 +8,20 @@ import { Link } from "react-router-dom";
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
+    UserName: "",
+    UserEmail: "",
+    UserPassword: "",
   });
 
   const { signup, isSigningUp } = useAuthStore();
 
   const validateForm = () => {
-    if (!formData.name.trim()) return toast.error("Name is required");
-    if (!formData.email.trim()) return toast.error("Email is required");
-    if (!/\S+@\S+\.\S+/.test(formData.email))
+    if (!formData.UserName.trim()) return toast.error("Name is required");
+    if (!formData.UserEmail.trim()) return toast.error("Email is required");
+    if (!/\S+@\S+\.\S+/.test(formData.UserEmail))
       return toast.error("Invalid email format");
-    if (!formData.password) return toast.error("Password is required");
-    if (formData.password.length < 4)
+    if (!formData.UserPassword) return toast.error("Password is required");
+    if (formData.UserPassword.length < 4)
       return toast.error("Password must be at least 4 characters");
     return true;
   };
@@ -50,9 +50,9 @@ export default function Register() {
                 type="text"
                 placeholder="John Doe"
                 className="input input-bordered w-full pl-10"
-                value={formData.name}
+                value={formData.UserName}
                 onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
+                  setFormData({ ...formData, UserName: e.target.value })
                 }
               />
             </div>
@@ -69,9 +69,9 @@ export default function Register() {
                 type="email"
                 placeholder="you@example.com"
                 className="input input-bordered w-full pl-10"
-                value={formData.email}
+                value={formData.UserEmail}
                 onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
+                  setFormData({ ...formData, UserEmail: e.target.value })
                 }
               />
             </div>
@@ -88,9 +88,9 @@ export default function Register() {
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 className="input input-bordered w-full pl-10 pr-10"
-                value={formData.password}
+                value={formData.UserPassword}
                 onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
+                  setFormData({ ...formData, UserPassword: e.target.value })
                 }
               />
               <button

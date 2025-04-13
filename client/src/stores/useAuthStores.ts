@@ -8,6 +8,7 @@ import axios from "axios";
 
 interface AuthStore {
     authUser: any; 
+    points: number;
     isCheckingAuth: boolean;
     isSigningUp: boolean;
     isSigningOut: boolean;
@@ -16,11 +17,14 @@ interface AuthStore {
     checkAuth: () => void;
     signin: (data: any) => void; 
     signup: (data: any) => void;
+    updateProfile: (data:any)=> void;
     logout: () => void;
+    updatePoints:()=>void;
 }
 
 export const useAuthStore = create<AuthStore>((set, get) => ({
   authUser: null,
+  points: 0,
   isCheckingAuth: false,
   isSigningIn: false,
   isSigningOut: false,
@@ -124,6 +128,54 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
     //?----------------------------------------------------------------------
 
+    //! @name: updateProfile
+    //! @desc: Used to update the user profile
+
+    updateProfile: async(data)=>{
+        try {
+            set({isUpdatingProfile: true});
+            const response = await axiosInstance.put("/api/updateProfile", data);
+            set({authUser: response.data});
+            toast.success("Profile Updated successfully");
+        } catch (error) {
+            if(axios.isAxiosError(error)){
+                console.error("Update profile error: ", error.response?.data);
+                toast.error(error.response?.data?.message || "Update profile failed!!");
+            }else{
+                console.error("Unexpected Error: ", error);
+                toast.error("Something went wrong!");
+
+            }
+
+            
+        }finally {
+            set({isUpdatingProfile: false});
+        }
+    },
+
+    //?------------------------------------------------------------------------------
+    
+    //! @name: updatePoints
+    //! @desc: updates the users total point earned
+
+    updatePoints: async()=>{
+        try {
+         set({isUpdatingProfile:true});
+            const response = await axiosInstance("/api//UpdatePoints")
+            console.log("Total Points: ", response.data);
+            set({points: response.data.totalPoints});
+            toast.success("Points updated")
+        } catch (error) {
+
+            console.error("Error in updatepoints: " , error)
+            toast.error("Error updating points")
+            set({points: 0})
+
+            
+        }finally{
+            set({isUpdatingProfile: false});
+        }
+    }
 
 
 }));

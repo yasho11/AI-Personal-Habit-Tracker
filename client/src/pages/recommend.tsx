@@ -1,102 +1,82 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom"; // To get the habit ID from URL parameters
-import axiosInstance from "../libs/axios";
-import styles from "./recommend.module.css"; // Import the CSS module
+import { useEffect, useState } from "react";
+import { useHabitStores } from "../stores/useHabitStores";
+import { Loader } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import { HabitType } from "../libs/types";
 
-// Define the types for the habit and recommendation
-interface Habit {
-  HabitName: string;
-  HabitDesc: string;
-  HabitStreak: number;
-  Status: string;
-  LastCompleted: string;
-  HabitPoints: number;
-}
 
-interface RecommendationResponse {
-  recommendation: string;
-}
+function Recommend() {
+  // Zustand store destructuring
+  const {Habits, isFetchingHabit, fetchAllHabit, recommend, Recommendation, isFetchingRecommendation} = useHabitStores();
 
-const RecommendHabit: React.FC = () => {
-  const { habitId } = useParams<{ habitId: string }>(); // Get the habit ID from the URL params
-  const [habit, setHabit] = useState<Habit | null>(null); // Store habit data
-  const [recommendation, setRecommendation] = useState<string>(""); // Store recommendation
-  const [loading, setLoading] = useState<boolean>(false); // Manage loading state
-  const [error, setError] = useState<string | null>(null); // Manage error state
-  const navigate = useNavigate();
+  // State to track selected habit
+  const [selectedHabitId, setSelectedHabitId] = useState<string>("");
 
-  // Fetch habit data when the component mounts or the habit ID changes
+  // Fetch all habits on mount
   useEffect(() => {
-    const token = localStorage.getItem('jwt');
-    if (!token) {
-      navigate("/login");
-    } else {
-      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      if (habitId) {
-        fetchHabitData();
-      }
-    }
-  }, [navigate, habitId]);
-
-  const fetchHabitData = async () => {
-    try {
-      const response = await axiosInstance.get<{ habit: Habit }>(`/getHabit/${habitId}`);
-      setHabit(response.data.habit); // Store the nested habit data
-    } catch (err) {
-      setError("Failed to fetch habit data.");
-    }
-  };
-
-  // Function to fetch the recommendation
-  const getRecommendation = async () => {
-    setLoading(true);
-    setError(null); // Clear any previous errors
-
-    try {
-      const response = await axiosInstance.post<RecommendationResponse>(`/recommend/${habitId}`);
-      setRecommendation(response.data.recommendation); // Store the recommendation
-    } catch (err) {
-      setError("Failed to fetch recommendation. Please try again later.");
-    } finally {
-      setLoading(false); // Set loading to false after fetching is done
-    }
-  };
+    fetchAllHabit();
+  }, [fetchAllHabit]);
 
   return (
-    <div className={styles["recommendation-container"]}>
-      <h1>Habit Recommendation</h1>
+    <div className="p-6 max-w-3xl mx-auto space-y-6 h-screen">
+      <h1 className="text-3xl font-bold text-center">🌟 Get Habit Recommendations</h1>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {/* Habit Selector */}
+      <div className="form-control w-full">
+        <label className="label">
+          <span className="label-text">Select a Habit</span>
+        </label>
+        {isFetchingHabit ? (
+          <div className="flex items-center gap-2">
+            <Loader className="animate-spin" />
+            <span>Loading Habits...</span>
+          </div>
+        ) : (
+          <select
+            className="select select-bordered w-full"
+            value={selectedHabitId}
+            onChange={(e) => setSelectedHabitId(e.target.value)}
+          >
+            <option disabled value="">Choose a habit</option>
+            {Habits.map((habit: HabitType) => (
+              <option key={habit._id} value={habit._id}>
+                {habit.HabitName}
+              </option>
+            ))}
+          </select>
+        )}
+      </div>
 
-      {/* Show habit details if available */}
-      {habit ? (
-        <div className={styles["habit-card"]}>
-          <h2>Habit Details</h2>
-          <p><strong>Name:</strong> {habit.HabitName}</p>
-          <p><strong>Description:</strong> {habit.HabitDesc}</p>
-          <p><strong>Streak:</strong> {habit.HabitStreak}</p>
-          <p><strong>Status:</strong> {habit.Status}</p>
-          <p><strong>Last Completed:</strong> {habit.LastCompleted}</p>
-          <p><strong>Points:</strong> {habit.HabitPoints}</p> {/* Accessing nested habitPoints */}
-
-          {/* Button to fetch recommendation */}
-          <button onClick={getRecommendation} disabled={loading}>
-            {loading ? "Loading..." : "Get Recommendation"}
-          </button>
-
-          {/* Display the recommendation if available */}
-          {recommendation && (
-            <div className={styles["recommendation-card"]}>
-              <h2>Recommendation:</h2>
-              <p>{recommendation}</p>
-            </div>
+      {/* Recommend Button */}
+      <div className="text-center">
+        <button
+          className="btn btn-primary btn-wide"
+          onClick={() => selectedHabitId && recommend(selectedHabitId)}
+          disabled={!selectedHabitId || isFetchingRecommendation}
+        >
+          {isFetchingRecommendation ? (
+            <>
+              <Loader className="animate-spin mr-2" /> Generating...
+            </>
+          ) : (
+            "Recommend"
           )}
+        </button>
+      </div>
+
+      {/* Output Recommendation */}
+      {Recommendation && (
+        <div className="card bg-base-200 shadow-xl p-4">
+          <div className="card-body">
+            <h2 className="card-title">🧠 Recommendation:</h2>
+            <div className="prose max-w-none dark:prose-invert">
+              <ReactMarkdown>{Recommendation}</ReactMarkdown>
+            </div>
+          </div>
         </div>
-      ) : (
-        <p>Loading habit data...</p>
       )}
     </div>
   );
-};
+}
 
-export default RecommendHabit;
+export default Recommend;

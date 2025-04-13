@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const secret = process.env.JWT_SECRET || "Nokey";
+const secret = process.env.SecretKey || "Nokey";
 
 
 interface AuthRequest extends Request{
@@ -19,25 +19,26 @@ export const protectRoute = async (req: AuthRequest, res: Response, next: NextFu
 
   try{
     const token = req.cookies.jwt;
+
     if(!token){
       res.status(401).json({message: "Unauthorized - No token provided"});
       return;
     }
 
-    const decoded = jwt.verify(token, secret as string) as { UserId: string };
+    const decoded = jwt.verify(token, secret as string) as { Userid: string };
 
-    if(!decoded || !decoded.UserId){
+    if(!decoded || !decoded.Userid){
       res.status(401).json({message: "Unauthorized - Invalid token"});
       return;
     }
 
 
-    if(!Types.ObjectId.isValid(decoded.UserId)){
+    if(!Types.ObjectId.isValid(decoded.Userid)){
       res.status(401).json({message: "Invalid User Id"});
       return;
     }
 
-    const userObj = new Types.ObjectId(decoded.UserId);
+    const userObj = new Types.ObjectId(decoded.Userid);
 
     const user = await User.findById(userObj).select("-UserPassword");
 

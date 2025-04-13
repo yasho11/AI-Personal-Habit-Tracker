@@ -10,6 +10,8 @@ import { useThemeStore } from "./stores/useThemeStore";
 import { Loader } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 import Homepage from "./pages/Homepage";
+import ProfilePage from "./pages/profile";
+import Recommend from "./pages/recommend";
 
 
 
@@ -32,14 +34,17 @@ function App(){
   return(
     <div data-theme = {theme}>
       <Navbar/>
+      <div className="ml-5">
       <Routes>
         <Route path = "/" element={authUser ? <Homepage/> : <Navigate to= "/signin"/>}/>
         <Route path="/signup" element= {!authUser ? <Signup/> : <Navigate to = "/"/>}/>
         <Route path="/signin" element = {!authUser ? <Login/> : <Navigate to = "/"/>}/>
-        
+        <Route path="/profile" element = {authUser ? <ProfilePage/>: <Navigate to = "/signin"/>}/>
+        <Route path="/habits" element={authUser ? <Homepage/> : <Navigate to= "/signin"/>}/>
         <Route path="/settings" element= {<SettingsPage/>}/>
+        <Route path="/recommend" element= {authUser? <Recommend/>: <Navigate to = "/signin"/>}/>  
       </Routes>
-
+      </div>
       <Toaster/>
     </div>
   ) 

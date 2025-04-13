@@ -29,7 +29,7 @@ const UserSchema: Schema = new Schema({
   },
   ProfileUrl: {
     type: String,
-    required: true,
+    required: false,
   },
   resetToken: {
     type: String,
