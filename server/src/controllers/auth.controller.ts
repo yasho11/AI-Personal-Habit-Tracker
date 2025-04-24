@@ -130,6 +130,7 @@ export const signout = async (req: Request, res: Response): Promise<void>=>{
 //! @desc: Update user profile
 
 export const updateProfile = async (req: AuthRequest, res: Response): Promise<void> => {
+  
   try {
     const user = req.user;
     const { ProfileUrl } = req.body;
@@ -170,7 +171,9 @@ export const updateProfile = async (req: AuthRequest, res: Response): Promise<vo
     res.status(500).json({ message: "Internal server error", error_area: "Update Profile" });
   }
 };
-//---------------------------------------------------------------------------------------------------
+
+
+//?---------------------------------------------------------------------------------------------------
 
 //!name: getUser
 //!desc: Get user details
