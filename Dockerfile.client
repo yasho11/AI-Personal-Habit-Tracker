@@ -1,0 +1,14 @@
+FROM node:20
+
+WORKDIR /app
+
+# Copy client package.json files
+COPY client/package.json client/package-lock.json ./
+
+RUN npm install
+
+# Copy rest of client code
+COPY client/. .
+
+EXPOSE 5173
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

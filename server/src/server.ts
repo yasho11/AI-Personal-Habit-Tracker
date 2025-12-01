@@ -14,14 +14,14 @@ const app = express();
 const PORT = process.env.PORT;
 
 // Enable JSON parsing
-app.use(express.json({limit: '10mb'}));
-app.use(express.urlencoded({limit: '10mb', extended: true}));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.static("public"));
 app.use(cookieParser());
 // ✅ FIX OPAQUE RESPONSE BLOCKING: Correct CORS settings
 app.use(
   cors({
-    origin: "http://localhost:5173", // Explicitly allow frontend origin
+    origin: ["http://localhost:5173", "http://172.23.0.2:5173", "http://172.23.0.3:5173"], // Explicitly allow frontend origin
     methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -35,7 +35,7 @@ app.use("/api", authRoutes);
 app.use("/api", habitRoutes);
 
 // ✅ Connect to MongoDB
-const mongoURI = process.env.mongoDB;
+const mongoURI = process.env.MONGO_URI;
 if (!mongoURI) {
   throw new Error("MongoDB connection string is not defined in environment variables.");
 }

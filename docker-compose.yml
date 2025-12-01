@@ -1,0 +1,43 @@
+services:
+  mongo:
+    image: mongo:6
+    container_name: habit-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  server:
+    build:
+      context: . # root of the repo
+      dockerfile: Dockerfile.server # points to root
+    container_name: habit-server
+    ports:
+      - "5001:5001"
+    env_file:
+      - ./server/.env
+    depends_on:
+      - mongo
+    volumes:
+      - ./server:/app
+      - ./server/.env:/app/.env
+      - /app/node_modules
+    command: npm run dev
+
+  client:
+    build:
+      context: . # root of the repo
+      dockerfile: Dockerfile.client # points to root
+    container_name: habit-client
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:5001
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    command: npm run dev -- --host 0.0.0.0
+
+volumes:
+  mongo-data:

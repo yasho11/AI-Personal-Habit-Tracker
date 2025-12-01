@@ -1,0 +1,14 @@
+FROM node:20
+
+WORKDIR /app
+
+# Copy server package.json files
+COPY server/package.json server/package-lock.json ./
+
+RUN npm install
+
+# Copy rest of server code
+COPY server/. .
+
+EXPOSE 5001
+CMD ["npm", "run", "dev"]
